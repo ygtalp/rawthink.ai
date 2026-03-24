@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAWTHINK — Unfiltered intelligence, honestly built.</title>
+  <meta name="description" content="RAWTHINK is a solo-founded AI company building games, creative tools, and software. No pretense, no shortcuts. Just the work.">
+  <meta name="theme-color" content="#0C0C0E">
+  <meta property="og:title" content="RAWTHINK">
+  <meta property="og:description" content="Unfiltered intelligence, honestly built. AI · Games · Software.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rawthink.ai">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="RAWTHINK">
+  <meta name="twitter:description" content="Unfiltered intelligence, honestly built.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬥</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1N0X5S6KLV"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-1N0X5S6KLV');
+  </script>
+  <style>
+    :root {
+      --bg: #0C0C0E;
+      --surface: #161619;
+      --border: #2A2A30;
+      --text: #E8E6E1;
+      --muted: #8A8880;
+      --faint: #3A3A40;
+      --accent: #E8522D;
+      --secondary: #C4956A;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    ::selection { background: rgba(232,82,45,0.2); color: var(--text); }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Subtle radial glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 350px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(232,82,45,0.035) 0%, transparent 70%);
+      pointer-events: none;
+      filter: blur(60px);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    /* Phase label */
+    .phase-label {
+      height: 20px;
+      margin-bottom: 24px;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .phase-label.visible { opacity: 1; }
+
+    /* Wordmark container */
+    .wordmark {
+      font-size: clamp(40px, 10vw, 76px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.2em;
+      position: relative;
+    }
+
+    /* Individual letters */
+    .letter {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.1s ease, transform 0.15s ease, color 0.4s ease;
+    }
+    .letter.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .letter.erasing {
+      transition: opacity 0.05s ease;
+    }
+    .letter.accent-color {
+      color: var(--accent);
+    }
+
+    /* Brackets */
+    .bracket {
+      color: var(--accent);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-block;
+      overflow: hidden;
+      max-width: 0;
+    }
+    .bracket.visible {
+      opacity: 1;
+      max-width: 1em;
+    }
+    .bracket.left { transform: translateX(-8px); margin-right: 0; }
+    .bracket.left.visible { transform: translateX(0); margin-right: 4px; }
+    .bracket.right { transform: translateX(8px); margin-left: 0; }
+    .bracket.right.visible { transform: translateX(0); margin-left: 4px; }
+
+    /* Underscore cursor (for CURSOR variant) */
+    .underscore {
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      margin-left: 2px;
+    }
+    .underscore.visible { opacity: 1; }
+    .underscore.blink { animation: blink 1.06s step-end infinite; }
+
+    /* Typing cursor (thin line) */
+    .typing-cursor {
+      display: inline-block;
+      width: 3px;
+      height: 0.82em;
+      background: var(--accent);
+      margin-left: 5px;
+      border-radius: 1px;
+      vertical-align: baseline;
+      opacity: 0;
+    }
+    .typing-cursor.blink { animation: blink 1.06s step-end infinite; }
+    .typing-cursor.solid { opacity: 1; animation: none; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Variant name */
+    .variant-name {
+      margin-top: 20px;
+      height: 24px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .variant-name.visible { opacity: 1; }
+
+    /* Tagline */
+    .tagline {
+      margin-top: 48px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      line-height: 1.7;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tagline.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Bottom bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      transition: opacity 1s ease 0.5s;
+      z-index: 1;
+    }
+    .bottom-bar.visible { opacity: 1; }
+
+    .bottom-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .bottom-text {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .bottom-right {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--faint);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .wordmark { font-size: 36px; }
+      .phase-label { font-size: 9px; letter-spacing: 3px; }
+      .tagline { font-size: 14px; margin-top: 36px; }
+      .bottom-bar { padding: 16px 24px; }
+      .bottom-text { font-size: 11px; }
+      .bottom-right { font-size: 9px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="phase-label" id="phaseLabel"></div>
+
+    <div class="wordmark" id="wordmark">
+      <span class="bracket left" id="bracketL">[</span>
+      <span class="letter" id="l0">R</span>
+      <span class="letter" id="l1">A</span>
+      <span class="letter" id="l2">W</span>
+      <span class="letter" id="l3">T</span>
+      <span class="letter" id="l4">H</span>
+      <span class="letter" id="l5">I</span>
+      <span class="letter" id="l6">N</span>
+      <span class="letter" id="l7">K</span>
+      <span class="bracket right" id="bracketR">]</span>
+      <span class="underscore" id="underscore">_</span>
+      <span class="typing-cursor" id="typingCursor"></span>
+    </div>
+
+    <div class="variant-name" id="variantName"></div>
+
+    <div class="tagline" id="tagline">
+      Unfiltered intelligence, honestly built.
+    </div>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar">
+    <div class="bottom-left">
+      <div class="pulse-dot"></div>
+      <!-- <span class="bottom-text">AI · Games · Software</span> -->
+    </div>
+    <span class="bottom-right">ISTANBUL · 2026</span>
+  </div>
+
+  <script>
+    const letters = document.querySelectorAll('.letter');
+    const bracketL = document.getElementById('bracketL');
+    const bracketR = document.getElementById('bracketR');
+    const underscore = document.getElementById('underscore');
+    const typingCursor = document.getElementById('typingCursor');
+    const phaseLabel = document.getElementById('phaseLabel');
+    const variantName = document.getElementById('variantName');
+    const tagline = document.getElementById('tagline');
+    const bottomBar = document.getElementById('bottomBar');
+
+    const RAW_END = 3;
+    let cycleCount = 0;
+
+    function wait(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function showTypingCursor(mode) {
+      typingCursor.className = 'typing-cursor';
+      if (mode === 'blink') typingCursor.classList.add('blink');
+      else if (mode === 'solid') typingCursor.classList.add('solid');
+    }
+
+    function hideTypingCursor() {
+      typingCursor.className = 'typing-cursor';
+    }
+
+    function setPhaseLabel(text) {
+      if (text) {
+        phaseLabel.textContent = text;
+        phaseLabel.classList.add('visible');
+      } else {
+        phaseLabel.classList.remove('visible');
+      }
+    }
+
+    function setVariantName(text) {
+      if (text) {
+        variantName.textContent = text;
+        variantName.classList.add('visible');
+      } else {
+        variantName.classList.remove('visible');
+      }
+    }
+
+    function clearAll() {
+      letters.forEach(l => {
+        l.classList.remove('visible', 'accent-color', 'erasing');
+      });
+      bracketL.classList.remove('visible');
+      bracketR.classList.remove('visible');
+      underscore.classList.remove('visible', 'blink');
+      hideTypingCursor();
+      setPhaseLabel('');
+      setVariantName('');
+    }
+
+    async function typeLetters() {
+      for (let i = 0; i < letters.length; i++) {
+        letters[i].classList.add('visible');
+        await wait(85 + Math.random() * 45);
+      }
+    }
+
+    async function eraseLetters() {
+      for (let i = letters.length - 1; i >= 0; i--) {
+        letters[i].classList.add('erasing');
+        letters[i].classList.remove('visible');
+        await wait(50 + Math.random() * 20);
+      }
+    }
+
+    function applySplit() {
+      for (let i = RAW_END; i < letters.length; i++) {
+        letters[i].classList.add('accent-color');
+      }
+    }
+
+    function removeSplit() {
+      letters.forEach(l => l.classList.remove('accent-color'));
+    }
+
+    async function animationLoop() {
+      while (true) {
+        clearAll();
+
+        // 1. Blank + blinking cursor
+        showTypingCursor('blink');
+        await wait(1200);
+
+        // 2. Typewrite "RAWTHINK"
+        showTypingCursor('solid');
+        await typeLetters();
+        await wait(600);
+
+        // 3. SPLIT reveal
+        hideTypingCursor();
+        applySplit();
+        await wait(2800);
+
+        // 4. BRACKET transition
+        removeSplit();
+        bracketL.classList.add('visible');
+        bracketR.classList.add('visible');
+        await wait(2400);
+
+        // 5. CURSOR transition
+        bracketL.classList.remove('visible');
+        bracketR.classList.remove('visible');
+        await wait(300);
+        underscore.classList.add('visible', 'blink');
+        await wait(2400);
+
+        // 6. Erase
+        underscore.classList.remove('visible', 'blink');
+        setPhaseLabel('');
+        setVariantName('');
+        showTypingCursor('solid');
+        await wait(200);
+        await eraseLetters();
+
+        // Show tagline after first cycle
+        if (cycleCount === 0) {
+          tagline.classList.add('visible');
+          bottomBar.classList.add('visible');
+        }
+        cycleCount++;
+
+        // 7. Pause
+        showTypingCursor('blink');
+        await wait(800);
+      }
+    }
+
+    // Start
+    animationLoop();
+  </script>
+</body>
+</html>
