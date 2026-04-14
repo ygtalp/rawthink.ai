@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAWTHINK — Unfiltered intelligence, honestly built.</title>
-  <meta name="description" content="RAWTHINK is a solo-founded AI company building games, creative tools, and software. No pretense, no shortcuts. Just the work.">
+  <title>RAWTHINK — Persistent Memory for AI Development</title>
+  <meta name="description" content="RAWThink is a persistent memory MCP server for AI development. Hybrid search, knowledge graph, session lifecycle. Your AI finally remembers you.">
   <meta name="theme-color" content="#0C0C0E">
-  <meta property="og:title" content="RAWTHINK">
-  <meta property="og:description" content="Unfiltered intelligence, honestly built. AI · Games · Software.">
+  <meta property="og:title" content="RAWTHINK — Persistent Memory for AI Development">
+  <meta property="og:description" content="Unfiltered intelligence, honestly built. Persistent memory MCP server for AI development.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://rawthink.ai">
+  <meta property="og:site_name" content="RAWTHINK">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="RAWTHINK">
-  <meta name="twitter:description" content="Unfiltered intelligence, honestly built.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬥</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <meta name="twitter:title" content="RAWTHINK — Persistent Memory for AI Development">
+  <meta name="twitter:description" content="Unfiltered intelligence, honestly built. Persistent memory MCP server for AI development.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2B25;</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1N0X5S6KLV"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-1N0X5S6KLV');
   </script>
   <style>
@@ -40,18 +40,18 @@
 
     ::selection { background: rgba(232,82,45,0.2); color: var(--text); }
 
+    html { scroll-behavior: smooth; }
+
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Space Mono', monospace;
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    /* Noise texture */
+    /* Noise texture overlay */
     body::before {
       content: '';
       position: fixed;
@@ -60,382 +60,637 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 128px 128px;
       pointer-events: none;
-      z-index: 0;
+      z-index: 9999;
     }
 
-    /* Subtle radial glow */
-    body::after {
+    /* ---- Layout ---- */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    section {
+      padding: 100px 0;
+    }
+
+    /* ---- Fade-in on scroll ---- */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ---- Typography ---- */
+    h1, h2, h3, h4 {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* ================================================
+       HERO
+       ================================================ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      padding: 60px 0;
+    }
+
+    /* Radial glow behind hero */
+    .hero::after {
       content: '';
-      position: fixed;
-      top: 35%;
+      position: absolute;
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 700px;
-      height: 350px;
+      width: 800px;
+      height: 400px;
       border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(232,82,45,0.035) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(232,82,45,0.04) 0%, transparent 70%);
       pointer-events: none;
       filter: blur(60px);
       z-index: 0;
     }
 
-    .container {
+    .hero-content {
       position: relative;
       z-index: 1;
+    }
+
+    .wordmark {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(52px, 12vw, 96px);
+      font-weight: 700;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+    .wordmark .raw { color: var(--text); }
+    .wordmark .think { color: var(--accent); }
+
+    .hero-subtitle {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: clamp(18px, 3vw, 22px);
+      font-weight: 300;
+      color: var(--muted);
+      margin-bottom: 48px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover {
+      background: #d44825;
+      border-color: #d44825;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* ================================================
+       PROBLEM
+       ================================================ */
+    .problem {
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .problem-text {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 auto 32px;
+    }
+
+    .problem-fix {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ================================================
+       ARCHITECTURE
+       ================================================ */
+    .architecture {
+      border-top: 1px solid var(--border);
+    }
+
+    .architecture h2 {
+      text-align: center;
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 64px;
+    }
+
+    .arch-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .arch-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 28px;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
+    .arch-card:hover {
+      border-color: var(--accent);
+    }
+
+    .arch-card .arch-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .arch-card h3 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .arch-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .arch-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      color: var(--faint);
+      font-size: 24px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    @media (max-width: 768px) {
+      .arch-flow {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .arch-arrow {
+        transform: rotate(90deg);
+        padding: 12px 0;
+        font-size: 20px;
+      }
+    }
+
+    /* ================================================
+       FEATURES
+       ================================================ */
+    .features {
+      border-top: 1px solid var(--border);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 64px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 36px 28px;
+      transition: border-color 0.3s ease;
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+    }
+
+    .feature-card h3 {
+      font-size: 16px;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+    .feature-card h3::before {
+      content: '// ';
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ================================================
+       BY THE NUMBERS
+       ================================================ */
+    .numbers {
+      border-top: 1px solid var(--border);
       text-align: center;
     }
 
-    /* Phase label */
-    .phase-label {
-      height: 20px;
-      margin-bottom: 24px;
-      font-size: 10px;
-      letter-spacing: 4px;
-      color: var(--muted);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+    .numbers h2 {
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 64px;
     }
-    .phase-label.visible { opacity: 1; }
 
-    /* Wordmark container */
-    .wordmark {
-      font-size: clamp(40px, 10vw, 76px);
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 32px;
+    }
+
+    .number-item .number-value {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(32px, 5vw, 48px);
       font-weight: 700;
-      letter-spacing: -1px;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      min-height: 1.2em;
-      position: relative;
-    }
-
-    /* Individual letters */
-    .letter {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.1s ease, transform 0.15s ease, color 0.4s ease;
-    }
-    .letter.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .letter.erasing {
-      transition: opacity 0.05s ease;
-    }
-    .letter.accent-color {
       color: var(--accent);
+      line-height: 1.1;
+      margin-bottom: 8px;
     }
 
-    /* Brackets */
-    .bracket {
-      color: var(--accent);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      display: inline-block;
-      overflow: hidden;
-      max-width: 0;
-    }
-    .bracket.visible {
-      opacity: 1;
-      max-width: 1em;
-    }
-    .bracket.left { transform: translateX(-8px); margin-right: 0; }
-    .bracket.left.visible { transform: translateX(0); margin-right: 4px; }
-    .bracket.right { transform: translateX(8px); margin-left: 0; }
-    .bracket.right.visible { transform: translateX(0); margin-left: 4px; }
-
-    /* Underscore cursor (for CURSOR variant) */
-    .underscore {
-      color: var(--accent);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-      margin-left: 2px;
-    }
-    .underscore.visible { opacity: 1; }
-    .underscore.blink { animation: blink 1.06s step-end infinite; }
-
-    /* Typing cursor (thin line) */
-    .typing-cursor {
-      display: inline-block;
-      width: 3px;
-      height: 0.82em;
-      background: var(--accent);
-      margin-left: 5px;
-      border-radius: 1px;
-      vertical-align: baseline;
-      opacity: 0;
-    }
-    .typing-cursor.blink { animation: blink 1.06s step-end infinite; }
-    .typing-cursor.solid { opacity: 1; animation: none; }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    /* Variant name */
-    .variant-name {
-      margin-top: 20px;
-      height: 24px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      color: var(--accent);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .variant-name.visible { opacity: 1; }
-
-    /* Tagline */
-    .tagline {
-      margin-top: 48px;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 300;
+    .number-item .number-label {
+      font-size: 14px;
       color: var(--muted);
-      letter-spacing: 0.5px;
-      line-height: 1.7;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .tagline.visible {
-      opacity: 1;
-      transform: translateY(0);
+      line-height: 1.4;
     }
 
-    /* Bottom bar */
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 24px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--border);
-      opacity: 0;
-      transition: opacity 1s ease 0.5s;
-      z-index: 1;
-    }
-    .bottom-bar.visible { opacity: 1; }
-
-    .bottom-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .pulse-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s ease infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .bottom-text {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .bottom-right {
+    .number-item .number-note {
       font-size: 11px;
-      letter-spacing: 2px;
       color: var(--faint);
+      margin-top: 6px;
+      line-height: 1.4;
     }
 
-    /* Responsive */
+    @media (max-width: 768px) {
+      .numbers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px 24px;
+      }
+      .numbers-grid .number-item:last-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .numbers-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* ================================================
+       TECH STACK
+       ================================================ */
+    .tech-stack {
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .tech-stack h2 {
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 48px;
+    }
+
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .tech-pill {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 22px;
+      letter-spacing: 0.5px;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .tech-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ================================================
+       FEATURED ARTICLE
+       ================================================ */
+    .article-section {
+      border-top: 1px solid var(--border);
+    }
+
+    .article-section h2 {
+      text-align: center;
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 48px;
+    }
+
+    .article-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 40px 44px;
+      max-width: 780px;
+      margin: 0 auto;
+      transition: border-color 0.3s ease;
+    }
+    .article-card:hover {
+      border-color: var(--accent);
+    }
+
+    .article-card h3 {
+      font-size: clamp(18px, 2.5vw, 22px);
+      line-height: 1.4;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .article-card p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .article-link {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: color 0.2s ease;
+    }
+    .article-link:hover {
+      color: var(--secondary);
+    }
+
     @media (max-width: 600px) {
-      .wordmark { font-size: 36px; }
-      .phase-label { font-size: 9px; letter-spacing: 3px; }
-      .tagline { font-size: 14px; margin-top: 36px; }
-      .bottom-bar { padding: 16px 24px; }
-      .bottom-text { font-size: 11px; }
-      .bottom-right { font-size: 9px; }
+      .article-card {
+        padding: 28px 24px;
+      }
+    }
+
+    /* ================================================
+       FOOTER
+       ================================================ */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .footer-built {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .footer-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: color 0.2s ease;
+    }
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .footer-tagline {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
+      color: var(--faint);
+      letter-spacing: 1px;
+    }
+
+    /* ================================================
+       RESPONSIVE
+       ================================================ */
+    @media (max-width: 600px) {
+      section {
+        padding: 72px 0;
+      }
+      .container {
+        padding: 0 20px;
+      }
+      .wordmark {
+        letter-spacing: -1px;
+      }
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      .btn {
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="phase-label" id="phaseLabel"></div>
-
-    <div class="wordmark" id="wordmark">
-      <span class="bracket left" id="bracketL">[</span>
-      <span class="letter" id="l0">R</span>
-      <span class="letter" id="l1">A</span>
-      <span class="letter" id="l2">W</span>
-      <span class="letter" id="l3">T</span>
-      <span class="letter" id="l4">H</span>
-      <span class="letter" id="l5">I</span>
-      <span class="letter" id="l6">N</span>
-      <span class="letter" id="l7">K</span>
-      <span class="bracket right" id="bracketR">]</span>
-      <span class="underscore" id="underscore">_</span>
-      <span class="typing-cursor" id="typingCursor"></span>
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="wordmark fade-in">
+        <span class="raw">RAW</span><span class="think">THINK</span>
+      </div>
+      <p class="hero-subtitle fade-in">Persistent memory for AI development.</p>
+      <div class="hero-buttons fade-in">
+        <a href="https://github.com/ygtalp/rawthink-mcp" class="btn btn-primary" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+        <a href="https://dev.to/yigitaunal/your-ai-doesnt-remember-you" class="btn btn-outline" target="_blank" rel="noopener">Read the Article &rarr;</a>
+      </div>
     </div>
+  </section>
 
-    <div class="variant-name" id="variantName"></div>
-
-    <div class="tagline" id="tagline">
-      Unfiltered intelligence, honestly built.
+  <!-- ===================== THE PROBLEM ===================== -->
+  <section class="problem">
+    <div class="container fade-in">
+      <p class="problem-text">
+        Every AI session starts from zero. Your context window is your entire relationship. Close the tab, lose the thread.
+      </p>
+      <p class="problem-fix">RAWThink fixes this.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="bottom-bar" id="bottomBar">
-    <div class="bottom-left">
-      <div class="pulse-dot"></div>
-      <!-- <span class="bottom-text">AI · Games · Software</span> -->
+  <!-- ===================== ARCHITECTURE ===================== -->
+  <section class="architecture">
+    <div class="container">
+      <div class="section-label fade-in" style="text-align:center;">Architecture</div>
+      <h2 class="fade-in">Three layers. One memory.</h2>
+      <div class="arch-flow fade-in">
+        <div class="arch-card">
+          <div class="arch-number">01</div>
+          <h3>Raw Input</h3>
+          <p>Sessions, documents, sources. Immutable data that flows in and never changes.</p>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-card">
+          <div class="arch-number">02</div>
+          <h3>Knowledge Graph</h3>
+          <p>Entities, relations, observations. JSONL-backed, connected across every session.</p>
+        </div>
+        <div class="arch-arrow">&rarr;</div>
+        <div class="arch-card">
+          <div class="arch-number">03</div>
+          <h3>Memory Layer</h3>
+          <p>MEMORY.md + MCP schema. Configuration, lifecycle, personality. The interface.</p>
+        </div>
+      </div>
     </div>
-    <span class="bottom-right">ISTANBUL · 2026</span>
-  </div>
+  </section>
 
+  <!-- ===================== FEATURES ===================== -->
+  <section class="features">
+    <div class="container">
+      <div class="section-label fade-in" style="text-align:center;">Features</div>
+      <h2 class="fade-in">Built for real workflows.</h2>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <h3>Hybrid Search</h3>
+          <p>Vector + BM25 via Qdrant. Dense and sparse retrieval with RRF fusion. Find anything across your entire history.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <h3>Knowledge Graph</h3>
+          <p>Typed entities, semantic relations, temporal observations. Turkish character normalization built-in. Your knowledge, structured.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <h3>Session Lifecycle</h3>
+          <p>Automatic session management, handoffs, context restoration. Every session builds on every previous one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== FEATURED ARTICLE ===================== -->
+  <section class="article-section">
+    <div class="container">
+      <div class="section-label fade-in" style="text-align:center;">Featured Article</div>
+      <h2 class="fade-in">From the blog.</h2>
+      <div class="article-card fade-in">
+        <h3>Your AI Doesn't Remember You. That's About to Matter More Than You Think.</h3>
+        <p>How two engineers independently arrived at the same architecture &mdash; and what it reveals about the next layer of personal AI.</p>
+        <a href="https://dev.to/yigitaunal/your-ai-doesnt-remember-you" class="article-link" target="_blank" rel="noopener">Read on dev.to &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-built">Built by Yigit Alp Unal &middot; Istanbul 2026</p>
+      <div class="footer-links">
+        <a href="https://github.com/ygtalp/rawthink-mcp" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://dev.to/yigitaunal" target="_blank" rel="noopener">dev.to</a>
+        <a href="https://yigitalpunal.com" target="_blank" rel="noopener">yigitalpunal.com</a>
+        <a href="https://www.linkedin.com/in/yigitaunal" target="_blank" rel="noopener">Linkedin</a>
+      </div>
+      <p class="footer-tagline">Unfiltered intelligence, honestly built.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== SCRIPTS ===================== -->
   <script>
-    const letters = document.querySelectorAll('.letter');
-    const bracketL = document.getElementById('bracketL');
-    const bracketR = document.getElementById('bracketR');
-    const underscore = document.getElementById('underscore');
-    const typingCursor = document.getElementById('typingCursor');
-    const phaseLabel = document.getElementById('phaseLabel');
-    const variantName = document.getElementById('variantName');
-    const tagline = document.getElementById('tagline');
-    const bottomBar = document.getElementById('bottomBar');
-
-    const RAW_END = 3;
-    let cycleCount = 0;
-
-    function wait(ms) {
-      return new Promise(r => setTimeout(r, ms));
-    }
-
-    function showTypingCursor(mode) {
-      typingCursor.className = 'typing-cursor';
-      if (mode === 'blink') typingCursor.classList.add('blink');
-      else if (mode === 'solid') typingCursor.classList.add('solid');
-    }
-
-    function hideTypingCursor() {
-      typingCursor.className = 'typing-cursor';
-    }
-
-    function setPhaseLabel(text) {
-      if (text) {
-        phaseLabel.textContent = text;
-        phaseLabel.classList.add('visible');
-      } else {
-        phaseLabel.classList.remove('visible');
+    // IntersectionObserver for fade-in on scroll
+    (function() {
+      var targets = document.querySelectorAll('.fade-in');
+      if (!('IntersectionObserver' in window)) {
+        // Fallback: show everything
+        targets.forEach(function(el) { el.classList.add('visible'); });
+        return;
       }
-    }
-
-    function setVariantName(text) {
-      if (text) {
-        variantName.textContent = text;
-        variantName.classList.add('visible');
-      } else {
-        variantName.classList.remove('visible');
-      }
-    }
-
-    function clearAll() {
-      letters.forEach(l => {
-        l.classList.remove('visible', 'accent-color', 'erasing');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
       });
-      bracketL.classList.remove('visible');
-      bracketR.classList.remove('visible');
-      underscore.classList.remove('visible', 'blink');
-      hideTypingCursor();
-      setPhaseLabel('');
-      setVariantName('');
-    }
-
-    async function typeLetters() {
-      for (let i = 0; i < letters.length; i++) {
-        letters[i].classList.add('visible');
-        await wait(85 + Math.random() * 45);
-      }
-    }
-
-    async function eraseLetters() {
-      for (let i = letters.length - 1; i >= 0; i--) {
-        letters[i].classList.add('erasing');
-        letters[i].classList.remove('visible');
-        await wait(50 + Math.random() * 20);
-      }
-    }
-
-    function applySplit() {
-      for (let i = RAW_END; i < letters.length; i++) {
-        letters[i].classList.add('accent-color');
-      }
-    }
-
-    function removeSplit() {
-      letters.forEach(l => l.classList.remove('accent-color'));
-    }
-
-    async function animationLoop() {
-      while (true) {
-        clearAll();
-
-        // 1. Blank + blinking cursor
-        showTypingCursor('blink');
-        await wait(1200);
-
-        // 2. Typewrite "RAWTHINK"
-        showTypingCursor('solid');
-        await typeLetters();
-        await wait(600);
-
-        // 3. SPLIT reveal
-        hideTypingCursor();
-        applySplit();
-        await wait(2800);
-
-        // 4. BRACKET transition
-        removeSplit();
-        bracketL.classList.add('visible');
-        bracketR.classList.add('visible');
-        await wait(2400);
-
-        // 5. CURSOR transition
-        bracketL.classList.remove('visible');
-        bracketR.classList.remove('visible');
-        await wait(300);
-        underscore.classList.add('visible', 'blink');
-        await wait(2400);
-
-        // 6. Erase
-        underscore.classList.remove('visible', 'blink');
-        setPhaseLabel('');
-        setVariantName('');
-        showTypingCursor('solid');
-        await wait(200);
-        await eraseLetters();
-
-        // Show tagline after first cycle
-        if (cycleCount === 0) {
-          tagline.classList.add('visible');
-          bottomBar.classList.add('visible');
-        }
-        cycleCount++;
-
-        // 7. Pause
-        showTypingCursor('blink');
-        await wait(800);
-      }
-    }
-
-    // Start
-    animationLoop();
+      targets.forEach(function(el) { observer.observe(el); });
+    })();
   </script>
 </body>
 </html>
+
